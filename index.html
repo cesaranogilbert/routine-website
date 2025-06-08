@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Science of a Better Day | An Interactive Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: The SPA is structured as a narrative journey that mirrors and expands upon the video script's "Problem -> Solution -> Outcome" flow. A persistent top navigation allows users to explore thematic sections: 1. Home (The Hook), 2. The Problem (Why change is needed), 3. The Process (How it works), 4. Core Concepts (The science behind it), 5. The Benefits (The outcome). This non-linear, section-based structure is more user-friendly than a simple scroll, as it allows users to delve into the areas that most interest them, transforming a 15-second pitch into an engaging, educational experience. -->
+    <!-- Visualization & Content Choices: 1. Problem (Goal: Compare) -> Interactive Doughnut Chart showing a "Chaotic vs. Focused Day." Justification: Visually demonstrates the core problem and the potential for improvement, making it tangible. (Chart.js). 2. Process (Goal: Explain) -> 3-Step HTML/CSS flow diagram. Justification: Clearly and visually breaks down the user journey. (HTML/Tailwind). 3. Core Concepts (Goal: Inform/Organize) -> Interactive Line Chart showing energy curves for different "Chronotypes." Justification: Adds educational depth and credibility by explaining the "why" behind the planner's recommendations. (Chart.js). 4. Benefits (Goal: Compare/Persuade) -> Dynamic Bar Chart showing percentage gains. Justification: Quantifies the promised benefits, making them more concrete and compelling. (Chart.js). All interactions update content dynamically to create a cohesive and responsive experience. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F9FAFB; /* gray-50 */
+            color: #1F2937; /* gray-800 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 320px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+                max-height: 400px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s ease;
+            position: relative;
+            padding-bottom: 4px;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #3B82F6; /* blue-500 */
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header id="main-header" class="bg-white/80 backdrop-blur-lg fixed top-0 left-0 right-0 z-50 shadow-sm">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="#home" class="text-xl font-bold text-gray-800">The Science of a <span class="text-blue-500">Better Day</span></a>
+            <nav class="hidden md:flex space-x-8">
+                <a href="#problem" class="nav-link text-gray-600 hover:text-blue-500">The Problem</a>
+                <a href="#process" class="nav-link text-gray-600 hover:text-blue-500">The Process</a>
+                <a href="#concepts" class="nav-link text-gray-600 hover:text-blue-500">Core Concepts</a>
+                <a href="#benefits" class="nav-link text-gray-600 hover:text-blue-500">The Benefits</a>
+            </nav>
+            <a href="#" class="hidden md:inline-block bg-blue-500 text-white font-semibold px-5 py-2 rounded-lg hover:bg-blue-600 transition-colors">Create Free Plan</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="home" class="pt-24 pb-16 md:pt-32 md:pb-24 text-center bg-white">
+            <div class="container mx-auto px-6">
+                <h1 class="text-3xl md:text-5xl font-bold tracking-tight text-gray-900">Feeling Overwhelmed and Unproductive?</h1>
+                <p class="mt-4 md:mt-6 max-w-2xl mx-auto text-lg md:text-xl text-gray-600">From hitting snooze to endless scrolling, a lack of structure drains your energy and focus. It's time to stop guessing and start designing your day for success.</p>
+                <div class="mt-8 flex justify-center gap-4">
+                    <a href="#" class="bg-blue-500 text-white font-semibold px-8 py-3 rounded-lg hover:bg-blue-600 transition-colors text-lg">Create Your Free Plan</a>
+                    <a href="#problem" class="bg-gray-200 text-gray-800 font-semibold px-8 py-3 rounded-lg hover:bg-gray-300 transition-colors text-lg">Learn More</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="problem" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center max-w-3xl mx-auto">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">The Anatomy of a Disorganized Day</h2>
+                    <p class="mt-4 text-lg text-gray-600">Without a plan, our time is often consumed by distractions and low-impact tasks, leaving little room for what truly matters. This visualization shows how a typical unstructured day breaks down versus a day designed for peak performance. Use the toggle to see the difference.</p>
+                </div>
+                <div class="mt-12 flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+                    <div class="w-full lg:w-1/2">
+                        <div class="chart-container">
+                            <canvas id="dayComparisonChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-1/2">
+                        <div class="flex justify-center mb-6">
+                            <div class="bg-gray-200 rounded-full p-1 flex">
+                                <button id="chaoticBtn" class="px-6 py-2 text-sm font-semibold rounded-full bg-white shadow text-blue-600">Chaotic Day</button>
+                                <button id="focusedBtn" class="px-6 py-2 text-sm font-semibold rounded-full text-gray-600">Focused Day</button>
+                            </div>
+                        </div>
+                        <div id="problem-text-display" class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                            <h3 id="problem-text-title" class="text-xl font-bold text-gray-800 mb-2">The Chaotic Day</h3>
+                            <p id="problem-text-content" class="text-gray-600">On a typical unstructured day, a significant portion of your energy is lost to constant distractions and reactive work. This leads to a feeling of being busy but not productive, ending the day with key goals untouched.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="process" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center max-w-3xl mx-auto">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Your Path to Clarity in 3 Simple Steps</h2>
+                    <p class="mt-4 text-lg text-gray-600">Our planner transforms insights about your unique biology and goals into a simple, actionable daily schedule. The process is quick, intuitive, and designed to deliver immediate value.</p>
+                </div>
+                <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 text-center">
+                    <div class="p-6">
+                        <div class="flex items-center justify-center h-16 w-16 bg-blue-100 text-blue-600 rounded-full mx-auto text-2xl font-bold">1</div>
+                        <h3 class="mt-6 text-xl font-semibold">Answer 10 Questions</h3>
+                        <p class="mt-2 text-gray-600">Share key details about your energy levels, sleep patterns, and primary goals. This takes less than 5 minutes.</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-center h-16 w-16 bg-blue-100 text-blue-600 rounded-full mx-auto text-2xl font-bold">2</div>
+                        <h3 class="mt-6 text-xl font-semibold">Get Your Custom Plan</h3>
+                        <p class="mt-2 text-gray-600">Receive an instantly generated, personalized schedule that maps high-impact tasks to your peak energy times.</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-center h-16 w-16 bg-blue-100 text-blue-600 rounded-full mx-auto text-2xl font-bold">3</div>
+                        <h3 class="mt-6 text-xl font-semibold">Unlock Your Potential</h3>
+                        <p class="mt-2 text-gray-600">Follow your tailored routine to experience higher energy, deeper focus, and a greater sense of accomplishment every day.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="concepts" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center max-w-3xl mx-auto">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Powered by Science: Understanding Your Chronotype</h2>
+                    <p class="mt-4 text-lg text-gray-600">A "one-size-fits-all" schedule doesn't work because our internal body clocks (chronotypes) are different. The planner's effectiveness comes from aligning your activities with your natural energy rhythm. Select a chronotype to see its typical energy curve.</p>
+                </div>
+                <div class="mt-12 flex flex-col lg:flex-row-reverse items-center gap-8 lg:gap-12">
+                    <div class="w-full lg:w-1/2">
+                        <div class="chart-container">
+                            <canvas id="chronotypeChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-1/2">
+                        <div class="flex justify-center mb-6">
+                            <div class="bg-gray-200 rounded-full p-1 flex">
+                                <button id="larkBtn" class="px-6 py-2 text-sm font-semibold rounded-full bg-white shadow text-blue-600">Morning Lark</button>
+                                <button id="owlBtn" class="px-6 py-2 text-sm font-semibold rounded-full text-gray-600">Night Owl</button>
+                            </div>
+                        </div>
+                        <div id="concept-text-display" class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                             <h3 id="concept-text-title" class="text-xl font-bold text-gray-800 mb-2">The Morning Lark</h3>
+                             <p id="concept-text-content" class="text-gray-600">Morning Larks feel most energetic and productive early in the day. Their ideal schedule involves tackling the most demanding tasks before noon and winding down earlier in the evening to align with their natural sleep cycle.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="benefits" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center max-w-3xl mx-auto">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">The Tangible Results of a Structured Day</h2>
+                     <p class="mt-4 text-lg text-gray-600">By replacing chaos with structure, users report significant improvements across key areas of their life. The chart below illustrates the average gains from consistently following a personalized plan.</p>
+                </div>
+                <div class="mt-12 flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+                     <div class="w-full lg:w-1/2">
+                        <div class="chart-container h-96 max-h-96">
+                             <canvas id="benefitsChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-1/2 bg-gray-50 border border-gray-200 p-6 rounded-lg">
+                        <h3 class="font-bold text-xl mb-4">Sample Plan Snippet: Morning Focus Block</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <div class="w-20 font-mono text-gray-500 text-sm pt-1">09:00</div>
+                                <div class="flex-1 pl-4 border-l-2 border-blue-200">
+                                    <p class="font-semibold text-gray-800">Deep Work Session 1</p>
+                                    <p class="text-sm text-gray-500">Tackle your most important task. No email, no social media.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="w-20 font-mono text-gray-500 text-sm pt-1">10:30</div>
+                                <div class="flex-1 pl-4 border-l-2 border-gray-200">
+                                    <p class="font-semibold text-gray-800">Mindful Break</p>
+                                    <p class="text-sm text-gray-500">Step away from the screen. Stretch, walk, or meditate.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="w-20 font-mono text-gray-500 text-sm pt-1">10:45</div>
+                                <div class="flex-1 pl-4 border-l-2 border-blue-200">
+                                    <p class="font-semibold text-gray-800">Deep Work Session 2</p>
+                                    <p class="text-sm text-gray-500">Continue with focused work or switch to your second priority.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="cta" class="py-16 md:py-24 bg-gray-800 text-white text-center">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl md:text-4xl font-bold">Ready to build your best day, every day?</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-300">Take the first step towards higher energy and deeper focus. Your personalized plan is free and takes just a few minutes to create.</p>
+                <div class="mt-8">
+                     <a href="#" class="bg-blue-500 text-white font-semibold px-8 py-3 rounded-lg hover:bg-blue-600 transition-colors text-lg">Start Your Plan Now</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-900 text-gray-400 py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2025 The Better Day Project. An Interactive Report.</p>
+        </div>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const chartColors = {
+            blue: 'rgba(59, 130, 246, 0.8)',
+            blue_bg: 'rgba(59, 130, 246, 0.2)',
+            purple: 'rgba(139, 92, 246, 0.8)',
+            purple_bg: 'rgba(139, 92, 246, 0.2)',
+            yellow: 'rgba(234, 179, 8, 0.8)',
+            yellow_bg: 'rgba(234, 179, 8, 0.2)',
+            red: 'rgba(239, 68, 68, 0.8)',
+            red_bg: 'rgba(239, 68, 68, 0.2)',
+            gray: 'rgba(107, 114, 128, 0.8)',
+            gray_bg: 'rgba(107, 114, 128, 0.2)',
+        };
+
+        const wrapText = (str) => {
+            const words = str.split(' ');
+            let lines = [];
+            let currentLine = words[0];
+
+            for (let i = 1; i < words.length; i++) {
+                if (currentLine.length + words[i].length + 1 <= 16) {
+                    currentLine += ' ' + words[i];
+                } else {
+                    lines.push(currentLine);
+                    currentLine = words[i];
+                }
+            }
+            lines.push(currentLine);
+            return lines;
+        }
+
+        const dataStore = {
+            dayComparison: {
+                chaotic: {
+                    labels: ['Distractions', 'Low-Priority Work', 'Procrastination', 'Deep Work'],
+                    data: [40, 35, 15, 10],
+                    colors: [chartColors.yellow, chartColors.gray, chartColors.red, chartColors.blue],
+                    title: 'The Chaotic Day',
+                    description: 'On a typical unstructured day, a significant portion of your energy is lost to constant distractions and reactive work. This leads to a feeling of being busy but not productive, ending the day with key goals untouched.'
+                },
+                focused: {
+                    labels: ['Deep Work', 'Shallow Work', 'Planned Breaks', 'Distractions'],
+                    data: [50, 25, 15, 10],
+                    colors: [chartColors.blue, chartColors.purple, chartColors.gray, chartColors.yellow],
+                    title: 'The Focused Day',
+                    description: 'A structured day allocates the majority of your time to high-impact "deep work." Distractions are minimized, and breaks are intentionally planned to sustain energy, leading to greater output and satisfaction.'
+                }
+            },
+            chronotypes: {
+                lark: {
+                    data: [7, 9, 8, 6, 5, 4, 3],
+                    title: 'The Morning Lark',
+                    description: 'Morning Larks feel most energetic and productive early in the day. Their ideal schedule involves tackling the most demanding tasks before noon and winding down earlier in the evening to align with their natural sleep cycle.'
+                },
+                owl: {
+                    data: [3, 4, 5, 7, 9, 8, 6],
+                    title: 'The Night Owl',
+                    description: "Night Owls experience their energy peak later in the afternoon and evening. They often do their best creative or focused work after others have finished their day, but may struggle with traditional 9-to-5 schedules."
+                }
+            }
+        };
+
+        let dayComparisonChart, chronotypeChart, benefitsChart;
+
+        function createDayComparisonChart() {
+            const ctx = document.getElementById('dayComparisonChart').getContext('2d');
+            const initialData = dataStore.dayComparison.chaotic;
+            dayComparisonChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: initialData.labels,
+                    datasets: [{
+                        data: initialData.data,
+                        backgroundColor: initialData.colors,
+                        borderColor: '#F9FAFB',
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#4B5563', // gray-600
+                                font: {
+                                    family: "'Inter', sans-serif"
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+        }
+        
+        function createChronotypeChart() {
+            const ctx = document.getElementById('chronotypeChart').getContext('2d');
+            chronotypeChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['8am', '11am', '2pm', '5pm', '8pm', '11pm'],
+                    datasets: [{
+                        label: 'Energy Level',
+                        data: dataStore.chronotypes.lark.data,
+                        borderColor: chartColors.blue,
+                        backgroundColor: chartColors.blue_bg,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: chartColors.blue,
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 10,
+                            title: {
+                                display: true,
+                                text: 'Energy Level (1-10)',
+                                color: '#4B5563'
+                            }
+                        },
+                        x: {
+                           title: {
+                                display: true,
+                                text: 'Time of Day',
+                                color: '#4B5563'
+                           }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function createBenefitsChart() {
+             const ctx = document.getElementById('benefitsChart').getContext('2d');
+             benefitsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Deep Focus', 'Energy Levels', 'Goal Achievement', 'Well-being'],
+                    datasets: [{
+                        label: 'Average Improvement',
+                        data: [45, 30, 50, 25],
+                        backgroundColor: [
+                            chartColors.blue_bg,
+                            chartColors.purple_bg,
+                            chartColors.blue_bg,
+                            chartColors.purple_bg,
+                        ],
+                        borderColor: [
+                            chartColors.blue,
+                            chartColors.purple,
+                            chartColors.blue,
+                            chartColors.purple,
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    return ` Average Gain: +${context.raw}%`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                             title: {
+                                display: true,
+                                text: 'Reported Improvement (%)',
+                                color: '#4B5563'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function setupEventListeners() {
+            const chaoticBtn = document.getElementById('chaoticBtn');
+            const focusedBtn = document.getElementById('focusedBtn');
+            const problemTitle = document.getElementById('problem-text-title');
+            const problemContent = document.getElementById('problem-text-content');
+
+            chaoticBtn.addEventListener('click', () => {
+                updateDayChart('chaotic');
+                chaoticBtn.classList.add('bg-white', 'shadow', 'text-blue-600');
+                focusedBtn.classList.remove('bg-white', 'shadow', 'text-blue-600');
+            });
+
+            focusedBtn.addEventListener('click', () => {
+                updateDayChart('focused');
+                focusedBtn.classList.add('bg-white', 'shadow', 'text-blue-600');
+                chaoticBtn.classList.remove('bg-white', 'shadow', 'text-blue-600');
+            });
+
+            const larkBtn = document.getElementById('larkBtn');
+            const owlBtn = document.getElementById('owlBtn');
+
+            larkBtn.addEventListener('click', () => {
+                updateChronotypeChart('lark');
+                larkBtn.classList.add('bg-white', 'shadow', 'text-blue-600');
+                owlBtn.classList.remove('bg-white', 'shadow', 'text-blue-600');
+            });
+            
+            owlBtn.addEventListener('click', () => {
+                updateChronotypeChart('owl');
+                owlBtn.classList.add('bg-white', 'shadow', 'text-blue-600');
+                larkBtn.classList.remove('bg-white', 'shadow', 'text-blue-600');
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+            
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if(pageYOffset >= sectionTop - 100){
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if(link.getAttribute('href') === `#${current}`){
+                        link.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        function updateDayChart(type) {
+            const newData = dataStore.dayComparison[type];
+            dayComparisonChart.data.labels = newData.labels;
+            dayComparisonChart.data.datasets[0].data = newData.data;
+            dayComparisonChart.data.datasets[0].backgroundColor = newData.colors;
+            dayComparisonChart.update();
+
+            document.getElementById('problem-text-title').textContent = newData.title;
+            document.getElementById('problem-text-content').textContent = newData.description;
+        }
+        
+        function updateChronotypeChart(type) {
+            const newData = dataStore.chronotypes[type];
+            chronotypeChart.data.datasets[0].data = newData.data;
+            chronotypeChart.update();
+            
+            document.getElementById('concept-text-title').textContent = newData.title;
+            document.getElementById('concept-text-content').textContent = newData.description;
+        }
+
+        createDayComparisonChart();
+        createChronotypeChart();
+        createBenefitsChart();
+        setupEventListeners();
+    });
+    </script>
+
+</body>
+</html>
