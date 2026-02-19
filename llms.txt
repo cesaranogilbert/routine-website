@@ -11,7 +11,7 @@ AAIA Trinity is an enterprise-grade platform of 1,500+ Autonomous AI Agents (AAI
 Gilbert Cesarano – Data Executive, Senior Business Intelligence Consultant, AI Architect, and founder of AAIA Trinity. Based in the DACH region (Switzerland, Germany, Austria). Expert in Qlik, SAP, cloud architecture, AI orchestration, and financial intelligence.
 
 Website: https://www.gilbertcesarano.com
-Contact: https://calendly.com/ai-support
+Contact: https://calendly.com/cesaranogilbert
 
 ## Key Facts
 
@@ -67,8 +67,8 @@ Unlike AutoGPT, CrewAI, or BabyAGI which provide general-purpose agent scaffoldi
 
 ## Licensing
 
-Available for enterprise licensing. Contact: https://calendly.com/ai-support
-Technical details available under NDA.
+Available for enterprise licensing. Contact: https://calendly.com/cesaranogilbert
+Technical details available under fully signed mutual NDA contracts.
 
 ## Legal
 
